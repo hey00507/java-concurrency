@@ -3,8 +3,8 @@ package me.ethan.stock.service;
 import me.ethan.stock.domain.Stock;
 import me.ethan.stock.repository.StockRepository;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StockService {
@@ -15,14 +15,12 @@ public class StockService {
         this.stockRepository = stockRepository;
     }
 
-
-//    @Transactional
-    public synchronized void decreaseStock(Long id, Long quantity){
-        //get stock
-        //재고 감소
-        //저장
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void decrease(Long id, Long quantity) {
         Stock stock = stockRepository.findById(id).orElseThrow();
-        stock.decreaseStock(quantity);
+
+        stock.decrease(quantity);
+
         stockRepository.saveAndFlush(stock);
     }
 }

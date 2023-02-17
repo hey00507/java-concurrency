@@ -29,7 +29,7 @@ public class Stock {
         return quantity;
     }
 
-    public void  decreaseStock(Long quantity){
+    public void  decrease(Long quantity){
         if(this.quantity - quantity < 0){
             throw new RuntimeException("수량 없음");
         }

@@ -4,6 +4,7 @@ import me.ethan.stock.domain.Stock;
 import me.ethan.stock.repository.StockRepository;
 import me.ethan.stock.service.OptimisticLockStockService;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,27 +17,34 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class OptimisticLockStockFacadeTest {
-
     @Autowired
-    private  OptimisticLockStockFacade optimisticLockStockFacade;
+    private OptimisticLockStockFacade optimisticLockStockFacade;
 
     @Autowired
     private StockRepository stockRepository;
 
+    @BeforeEach
+    public void insert() {
+        Stock stock = new Stock(1L, 100L);
+
+        stockRepository.saveAndFlush(stock);
+    }
 
     @AfterEach
-    public void delete(){stockRepository.deleteAll();}
+    public void delete() {
+        stockRepository.deleteAll();
+    }
 
     @Test
-    public void apiCall100TimesAtOnce() throws InterruptedException {
+    public void 동시에_100개의요청() throws InterruptedException {
         int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
-        for ( int i= 0; i<threadCount; i++){
-            executorService.submit(()->{
+
+        for (int i = 0; i < threadCount; i++) {
+            executorService.submit(() -> {
                 try {
                     optimisticLockStockFacade.decrease(1L, 1L);
-
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -49,7 +57,7 @@ class OptimisticLockStockFacadeTest {
 
         Stock stock = stockRepository.findById(1L).orElseThrow();
 
-        assertEquals(0L, stock.getQuantity());
+        // 100 - (100 * 1) = 0
+        assertEquals(0, stock.getQuantity());
     }
-
 }

@@ -7,14 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.LockModeType;
 
-public interface StockRepository extends JpaRepository<Stock,Long> {
+public interface StockRepository extends JpaRepository<Stock, Long> {
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT S FROM Stock S where S.id= :id")
+    @Query("select s from Stock s where s.id=:id")
     Stock findByIdWithPessimisticLock(Long id);
 
-
     @Lock(value = LockModeType.OPTIMISTIC)
-    @Query("select s from Stock  s where s.id = :id")
+    @Query("select s from Stock s where s.id = :id")
     Stock findByIdWithOptimisticLock(Long id);
 }
