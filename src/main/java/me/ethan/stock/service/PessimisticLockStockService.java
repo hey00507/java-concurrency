@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+// 충돌이 빈번하게 일어나는 경우
 @Service
 public class PessimisticLockStockService {
     private final StockRepository stockRepository;
